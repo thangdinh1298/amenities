@@ -15,25 +15,45 @@
 
     <form method="POST">
         <div class="section">
-            <label><input type="radio" name="filter_type" value="prop_id" required onclick="showSection('prop_section')"> Property ID</label>
-            <label><input type="radio" name="filter_type" value="suburb" onclick="showSection('suburb_section')"> Suburb</label>
+            <label><input type="radio" name="filter_type" value="prop_id" required onclick="showMainSection('prop_section')"> Property ID</label>
+            <label><input type="radio" name="filter_type" value="suburb" onclick="showMainSection('suburb_section')"> Suburb</label>
         </div>
 
         <div id="prop_section" class="section" style="display:none;">
             <label>Property ID:</label>
             <input type="text" name="prop_id">
+
+            <!-- Optional location filter -->
+            <div class="section">
+                <label>Latitude:</label>
+                <input type="text" name="lat"><br>
+                <label>Longitude:</label>
+                <input type="text" name="lon"><br>
+                <label>Radius (km):</label>
+                <input type="text" name="radius">
+            </div>
         </div>
 
         <div id="suburb_section" class="section" style="display:none;">
             <label>Suburb:</label>
             <input type="text" name="suburb">
+
+            <!-- Optional location filter -->
+            <div class="section">
+                <label>Latitude:</label>
+                <input type="text" name="lat"><br>
+                <label>Longitude:</label>
+                <input type="text" name="lon"><br>
+                <label>Radius (km):</label>
+                <input type="text" name="radius">
+            </div>
         </div>
 
         <button type="submit">Search Amenities</button>
     </form>
 
     {% if amenities %}
-        <h2>Amenities (Filtered by {{ filter_info.filter }}: {{ filter_info.value }})</h2>
+        <h2>Amenities (Filtered by {{ filter_info.filter }}: {{ filter_info.value }}{% if filter_info.lat %}, Location: {{ filter_info.lat }}, {{ filter_info.lon }}, Radius: {{ filter_info.radius }} km{% endif %})</h2>
         <table>
             <tr>
                 <th>Category</th>
@@ -55,7 +75,7 @@
     {% endif %}
 
     <script>
-        function showSection(id) {
+        function showMainSection(id) {
             document.getElementById('prop_section').style.display = 'none';
             document.getElementById('suburb_section').style.display = 'none';
             document.getElementById(id).style.display = 'block';

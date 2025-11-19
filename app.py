@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import requests
+import math
 
 app = Flask(__name__)
 
@@ -34,11 +35,36 @@ def get_suburb_amenities(suburb):
         pass
     return []
 
+def haversine(lat1, lon1, lat2, lon2):
+    """
+    Calculate the great-circle distance between two points on the Earth.
+    Returns distance in kilometers.
+    """
+    R = 6371  # Earth radius in km
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+
+    a = math.sin(delta_phi/2)**2 + \
+        math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    return R * c
 
 def filter_by_radius(amenities, lat, lon, radius_km):
     # No endpoint to fetch all amenities
-    pass
-
+    try:
+        filtered = []
+        for amenity in amenities:
+            distance = haversine(lat, lon, float(amenity["lat"]), float(amenity["lon"]))
+            print('dist in km', distance)
+            if distance <= radius_km:
+                filtered.append(amenity)
+        return filtered
+    except:
+        pass
+    return amenities
 
 # ----------------------------
 # Routes
@@ -62,6 +88,21 @@ def index():
             if suburb:
                 amenities = get_suburb_amenities(suburb)
                 filter_info = {"filter": "Suburb", "value": suburb}
+
+        if amenities:
+            # Optional location filter
+            print('Here')
+            lat = request.form.get("lat", "").strip()
+            lon = request.form.get("lon", "").strip()
+            radius = request.form.get("radius", "").strip()
+            print('lat', lat)
+            print('lon', lon)
+            print('radius', radius)
+            print(request.form)
+
+            if lat and lon and radius:
+                amenities = filter_by_radius(amenities, lat, lon, radius)
+                print('Filtered', amenities)
 
     return render_template("index.html", amenities=amenities, filter_info=filter_info)
 
