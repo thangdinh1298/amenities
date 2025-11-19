@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amenities Explorer</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        table { border-collapse: collapse; width: 90%; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>Amenities Explorer</h1>
+
+    <form method="POST">
+        <div class="section">
+            <label><input type="radio" name="filter_type" value="prop_id" required onclick="showSection('prop_section')"> Property ID</label>
+            <label><input type="radio" name="filter_type" value="suburb" onclick="showSection('suburb_section')"> Suburb</label>
+        </div>
+
+        <div id="prop_section" class="section" style="display:none;">
+            <label>Property ID:</label>
+            <input type="text" name="prop_id">
+        </div>
+
+        <div id="suburb_section" class="section" style="display:none;">
+            <label>Suburb:</label>
+            <input type="text" name="suburb">
+        </div>
+
+        <button type="submit">Search Amenities</button>
+    </form>
+
+    {% if amenities %}
+        <h2>Amenities (Filtered by {{ filter_info.filter }}: {{ filter_info.value }})</h2>
+        <table>
+            <tr>
+                <th>Category</th>
+                <th>Area Name</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+            </tr>
+            {% for a in amenities %}
+            <tr>
+                <td>{{ a.category }}</td>
+                <td>{{ a.area_name }}</td>
+                <td>{{ a.lat }}</td>
+                <td>{{ a.lon }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% elif filter_info %}
+        <p>No amenities found for {{ filter_info.filter }}: {{ filter_info.value }}</p>
+    {% endif %}
+
+    <script>
+        function showSection(id) {
+            document.getElementById('prop_section').style.display = 'none';
+            document.getElementById('suburb_section').style.display = 'none';
+            document.getElementById(id).style.display = 'block';
+        }
+    </script>
+</body>
+</html>
