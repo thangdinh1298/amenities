@@ -91,18 +91,12 @@ def index():
 
         if amenities:
             # Optional location filter
-            print('Here')
             lat = request.form.get("lat", "").strip()
             lon = request.form.get("lon", "").strip()
             radius = request.form.get("radius", "").strip()
-            print('lat', lat)
-            print('lon', lon)
-            print('radius', radius)
-            print(request.form)
 
             if lat and lon and radius:
                 amenities = filter_by_radius(amenities, lat, lon, radius)
-                print('Filtered', amenities)
 
     return render_template("index.html", amenities=amenities, filter_info=filter_info)
 
