@@ -52,18 +52,20 @@ def haversine(lat1, lon1, lat2, lon2):
 
     return R * c
 
-def filter_by_radius(amenities, lat, lon, radius_km):
+def filter_by_radius(amenities, lat: float, lon: float, radius_km: float):
     # No endpoint to fetch all amenities
     try:
         filtered = []
         for amenity in amenities:
-            distance = haversine(lat, lon, float(amenity["lat"]), float(amenity["lon"]))
+            distance = haversine(lat, lon,
+                                 float(amenity["lat"]), float(amenity["lon"]))
             print('dist in km', distance)
             if distance <= radius_km:
                 filtered.append(amenity)
         return filtered
-    except:
-        pass
+    except Exception as e:
+        print('Exception', e)
+        # pass
     return amenities
 
 # ----------------------------
@@ -94,9 +96,12 @@ def index():
             lat = request.form.get("lat", "").strip()
             lon = request.form.get("lon", "").strip()
             radius = request.form.get("radius", "").strip()
+            # print('Form', request.form)
+            # print('Amenities', amenities)
 
             if lat and lon and radius:
-                amenities = filter_by_radius(amenities, lat, lon, radius)
+                amenities = filter_by_radius(amenities, float(lat), float(lon), float(radius))
+                # print('Filtered amenities', amenities)
 
     return render_template("index.html", amenities=amenities, filter_info=filter_info)
 
